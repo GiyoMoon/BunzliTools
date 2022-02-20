@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from 'react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import iconv from 'iconv-lite';
 
 export interface BunzliFile {
   fileName: string;
@@ -58,7 +59,7 @@ const EditingHandler = () => {
       }
 
       let reader = new FileReader();
-      reader.readAsText(file);
+      reader.readAsText(file, 'cp1252');
 
       reader.onload = () => {
         if (reader.result) {
@@ -110,12 +111,9 @@ const EditingHandler = () => {
       do {
         modifiedContent = modifiedContent.replaceAll('\r\n\r\n', '\r\n');
       } while (modifiedContent.match(/\r\n\r\n/));
-      const buffer = Buffer.from(modifiedContent);
 
-      const bomBuffer = Buffer.from('EFBBBF', 'hex');
-
-      const reformedBuffer = Buffer.concat([bomBuffer, buffer]);
-      zip.file(file.fileName, reformedBuffer);
+      const ansiFile = iconv.encode(modifiedContent, 'cp1252');
+      zip.file(file.fileName, ansiFile);
     }
     zip.generateAsync({ type: 'blob' }).then((content) => saveAs(content, 'newCores.zip'));
   };
