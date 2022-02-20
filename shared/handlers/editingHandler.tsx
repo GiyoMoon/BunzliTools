@@ -110,7 +110,12 @@ const EditingHandler = () => {
       do {
         modifiedContent = modifiedContent.replaceAll('\r\n\r\n', '\r\n');
       } while (modifiedContent.match(/\r\n\r\n/));
-      zip.file(file.fileName, modifiedContent);
+      const buffer = Buffer.from(modifiedContent);
+
+      const bomBuffer = Buffer.from('EFBBBF', 'hex');
+
+      const reformedBuffer = Buffer.concat([bomBuffer, buffer]);
+      zip.file(file.fileName, reformedBuffer);
     }
     zip.generateAsync({ type: 'blob' }).then((content) => saveAs(content, 'newCores.zip'));
   };
@@ -137,13 +142,13 @@ const EditingHandler = () => {
     setFiles(newFiles);
   };
 
-  const addAll = (files: BunzliFile[]) => {
-    const modifiedProps = properties.filter(p => p.value);
+  const addAll = (filesToAdd: BunzliFile[]) => {
+    const modifiedProps = properties.filter(p => p.value).map(p => Object.assign({}, p));
 
     const newFiles = [...files];
-    for (const file of files) {
+    for (const file of filesToAdd) {
       const fileIndex = files.findIndex(f => f.id === file.id);
-      newFiles[fileIndex].newProperties = modifiedProps.map(p => Object.assign({}, p));
+      newFiles[fileIndex].newProperties = modifiedProps;
     }
     setFiles(newFiles);
   };

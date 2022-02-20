@@ -109,21 +109,23 @@ const Home: NextPage = () => {
                   Generate new files
                 </button>
               }
-              {files.filter(f => f.newProperties.length > 0).sort((a, b) => a.id - b.id).map((file, i) => (
-                <div key={i} className='flex flex-col bg-slate-800 hover:bg-slate-600 rounded-md p-2 cursor-pointer w-72 my-1 px-2' onClick={() => removeProps(file)}>
-                  <div className='flex justify-between'>
-                    <p>ID:  <span className='text-red-500'>{file.id}</span></p>
-                    <p>{file.name}</p>
-                  </div>
-                  <p className='font-bold'>Modified values:</p>
-                  {file.newProperties.map(np => (
-                    <div key={np.id} className='flex justify-between'>
-                      <p>{np.key}:</p>
-                      <p className='text-green-500'>{np.value}</p>
+              <div className='overflow-y-auto' style={{ maxHeight: 'calc(100vh - 270px)' }}>
+                {files.filter(f => f.newProperties.length > 0).sort((a, b) => a.id - b.id).map((file, i) => (
+                  <div key={i} className='flex flex-col bg-slate-800 hover:bg-slate-600 rounded-md p-2 cursor-pointer w-72 my-1 px-2' onClick={() => removeProps(file)}>
+                    <div className='flex justify-between'>
+                      <p>ID:  <span className='text-red-500'>{file.id}</span></p>
+                      <p>{file.name}</p>
                     </div>
-                  ))}
-                </div>
-              ))}
+                    <p className='font-bold'>Modified values:</p>
+                    {file.newProperties.map(np => (
+                      <div key={np.id} className='flex justify-between'>
+                        <p>{np.key}:</p>
+                        <p className='text-green-500'>{np.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
               {files.filter(f => f.newProperties.length > 0).length === 0 &&
                 <p className='italic'>Nothing here</p>
               }
